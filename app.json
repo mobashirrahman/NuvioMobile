@@ -9,6 +9,12 @@
     "userInterfaceStyle": "dark",
     "scheme": "nuvio",
     "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/ios/AppIcon.appiconset/Icon-App-60x60@3x.png",
+      "name": "Nuvio"
+    },
     "splash": {
       "image": "./src/assets/splash-icon-new.png",
       "resizeMode": "contain",
