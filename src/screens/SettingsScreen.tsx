@@ -10,10 +10,10 @@ import {
   ScrollView,
   StatusBar,
   Platform,
-  Dimensions,
   Linking,
   FlatList,
 } from 'react-native';
+import { useWindowDimensions } from '../hooks/useWindowDimensions';
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
 import { mmkvStorage } from '../services/mmkvStorage';
@@ -51,8 +51,7 @@ import { LOCALES } from '../constants/locales';
 import { useSimklIntegration } from '../hooks/useSimklIntegration';
 import SimklIcon from '../components/icons/SimklIcon';
 
-const { width } = Dimensions.get('window');
-const isTablet = width >= 768;
+// isTablet is determined reactively inside the component (see SettingsScreen)
 
 // Settings categories for tablet sidebar
 // Settings categories moved inside component for translation
@@ -140,6 +139,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedCategory, onCategorySelect, c
 
 const SettingsScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
+
+  // Reactive tablet detection — updates when Mac window is resized
+  const { width: screenWidth } = useWindowDimensions();
+  const isTablet = screenWidth >= 768;
 
   const SETTINGS_CATEGORIES = [
     { id: 'account', title: t('settings.account'), icon: 'user' },

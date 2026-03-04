@@ -1,7 +1,5 @@
-import { StyleSheet, Platform, Dimensions } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { isTablet, isTV, isLargeTablet, HORIZONTAL_ITEM_WIDTH, HORIZONTAL_POSTER_HEIGHT, POSTER_WIDTH, POSTER_HEIGHT } from './searchUtils';
-
-const { width } = Dimensions.get('window');
 
 export const searchStyles = StyleSheet.create({
     container: {

@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StatusBar,
   Keyboard,
-  Dimensions,
   ScrollView,
   Platform,
 } from 'react-native';
+import { useWindowDimensions } from '../hooks/useWindowDimensions';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +51,6 @@ import { AddonSection } from '../components/search/AddonSection';
 import { DiscoverSection } from '../components/search/DiscoverSection';
 import { DiscoverBottomSheets } from '../components/search/DiscoverBottomSheets';
 
-const { width } = Dimensions.get('window');
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 // Add constants for saved settings keys
@@ -79,6 +78,9 @@ const SearchScreen = () => {
   const isInitialMount = useRef(true);
   const isMounted = useRef(true);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Reactive window dimensions — updates on Mac window resize
+  const { width } = useWindowDimensions();
 
   // Discover section state
   const [discoverCatalogs, setDiscoverCatalogs] = useState<DiscoverCatalog[]>([]);

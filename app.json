@@ -38,7 +38,10 @@
       "bundleIdentifier": "com.nuvio.hub",
       "associatedDomains": [],
       "jsEngine": "hermes",
-      "appleTeamId": "8QBDZ766S3"
+      "appleTeamId": "8QBDZ766S3",
+      "mac": {
+        "supportsTablet": true
+      }
     },
     "android": {
       "adaptiveIcon": {

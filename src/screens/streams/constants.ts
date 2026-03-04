@@ -1,5 +1,8 @@
 import { Dimensions } from 'react-native';
 
+// Note: SCREEN_WIDTH/HEIGHT are intentionally static here — the video player
+// runs fullscreen (UIRequiresFullScreen is false but users expect fullscreen video),
+// so we don't need reactive dimensions for the player overlay styles.
 const { width, height } = Dimensions.get('window');
 
 export const SCREEN_WIDTH = width;

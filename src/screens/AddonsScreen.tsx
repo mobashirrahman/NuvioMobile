@@ -13,7 +13,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
-  Dimensions,
   ScrollView,
   useColorScheme,
   Switch,
@@ -60,8 +59,6 @@ interface ExtendedManifest extends Manifest {
     configurationURL?: string;
   };
 }
-
-const { width } = Dimensions.get('window');
 
 const ANDROID_STATUSBAR_HEIGHT = StatusBar.currentHeight || 0;
 
@@ -640,7 +637,7 @@ const AddonsScreen = () => {
         return false;
       }) || false;
 
-      
+
       if (isAlreadyInstalled && !providesStreams) {
         setAlertTitle(t('common.error'));
         setAlertMessage('This addon is already installed. Multiple installations are only allowed for stream providers.');
@@ -655,7 +652,7 @@ const AddonsScreen = () => {
     } catch (error: any) {
       logger.error('Failed to fetch addon details:', error);
       setAlertTitle(t('common.error'));
-     
+
       const errorMessage = error?.message || `${t('addons.fetch_error')} ${urlToInstall}`;
       setAlertMessage(errorMessage);
       setAlertActions([{ label: t('common.ok'), onPress: () => setAlertVisible(false) }]);
@@ -733,109 +730,109 @@ const AddonsScreen = () => {
   };
 
   // Add function to handle configuration
- const ensureSlash = (url: string) =>
-  url.endsWith('/') ? url : url + '/';
+  const ensureSlash = (url: string) =>
+    url.endsWith('/') ? url : url + '/';
 
-const handleConfigureAddon = (addon: ExtendedManifest, transportUrl?: string) => {
-  let configUrl = '';
+  const handleConfigureAddon = (addon: ExtendedManifest, transportUrl?: string) => {
+    let configUrl = '';
 
-  logger.info(`Configure addon: ${addon.name}, ID: ${addon.id}`);
-  if (transportUrl) logger.info(`TransportUrl provided: ${transportUrl}`);
+    logger.info(`Configure addon: ${addon.name}, ID: ${addon.id}`);
+    if (transportUrl) logger.info(`TransportUrl provided: ${transportUrl}`);
 
-  // 1. behaviorHints.configurationURL
-  if (addon.behaviorHints?.configurationURL) {
-    configUrl = addon.behaviorHints.configurationURL;
-    logger.info(`Using configurationURL from behaviorHints: ${configUrl}`);
-  }
-
-  // 2. transportUrl
-  else if (transportUrl) {
-    const baseUrl = transportUrl.replace(/\/[^\/]+\.json$/, '/');
-    configUrl = `${ensureSlash(baseUrl)}configure`;
-    logger.info(`Using transportUrl to create config URL: ${configUrl}`);
-  }
-
-  // 3. addon.url
-  else if (addon.url) {
-    configUrl = `${ensureSlash(addon.url)}configure`;
-    logger.info(`Using addon.url property: ${configUrl}`);
-  }
-
- 
-  else if (addon.id && addon.id.startsWith('http')) {
-    const baseUrl = addon.id.replace(/\/[^\/]+\.json$/, '/');
-    configUrl = `${ensureSlash(baseUrl)}configure`;
-    logger.info(`Using addon.id as HTTP URL: ${configUrl}`);
-  }
-
-  // 5. stremio:// containing http/https
-  else if (addon.id && (addon.id.includes('https://') || addon.id.includes('http://'))) {
-    const match = addon.id.match(/(https?:\/\/[^\/]+)(\/[^\s]*)?/);
-    if (match) {
-      const domain = match[1];
-      const path = match[2] ? match[2].replace(/\/[^\/]+\.json$/, '/') : '/';
-      configUrl = `${ensureSlash(domain + path)}configure`;
-      logger.info(`Extracted HTTP URL from stremio:// format: ${configUrl}`);
+    // 1. behaviorHints.configurationURL
+    if (addon.behaviorHints?.configurationURL) {
+      configUrl = addon.behaviorHints.configurationURL;
+      logger.info(`Using configurationURL from behaviorHints: ${configUrl}`);
     }
-  }
 
-  // 6. stremio://domain.com
-  if (!configUrl && addon.id && addon.id.startsWith('stremio://')) {
-    const match = addon.id.match(/stremio:\/\/([^\/]+)(\/[^\s]*)?/);
-    if (match) {
-      const domain = match[1];
-      const path = match[2] ? match[2].replace(/\/[^\/]+\.json$/, '/') : '/';
-      configUrl = `${ensureSlash(`https://${domain}${path}`)}configure`;
-      logger.info(`Converted stremio:// protocol to https:// for config URL: ${configUrl}`);
+    // 2. transportUrl
+    else if (transportUrl) {
+      const baseUrl = transportUrl.replace(/\/[^\/]+\.json$/, '/');
+      configUrl = `${ensureSlash(baseUrl)}configure`;
+      logger.info(`Using transportUrl to create config URL: ${configUrl}`);
     }
-  }
 
-  // 7. addon.transport
-  if (!configUrl && addon.transport && addon.transport.includes('http')) {
-    const baseUrl = addon.transport.replace(/\/[^\/]+\.json$/, '/');
-    configUrl = `${ensureSlash(baseUrl)}configure`;
-    logger.info(`Using addon.transport for config URL: ${configUrl}`);
-  }
+    // 3. addon.url
+    else if (addon.url) {
+      configUrl = `${ensureSlash(addon.url)}configure`;
+      logger.info(`Using addon.url property: ${configUrl}`);
+    }
 
-  // 8. originalUrl
-  if (!configUrl && (addon as any).originalUrl) {
-    const baseUrl = (addon as any).originalUrl.replace(/\/[^\/]+\.json$/, '/');
-    configUrl = `${ensureSlash(baseUrl)}configure`;
-    logger.info(`Using originalUrl property: ${configUrl}`);
-  }
 
-  // 9. Failure
-  if (!configUrl) {
-    logger.error(`Failed to determine config URL for addon: ${addon.name}, ID: ${addon.id}`);
-    setAlertTitle(t('addons.config_unavailable_title'));
-    setAlertMessage(t('addons.config_unavailable_msg'));
-    setAlertActions([{ label: t('common.ok'), onPress: () => setAlertVisible(false) }]);
-    setAlertVisible(true);
-    return;
-  }
+    else if (addon.id && addon.id.startsWith('http')) {
+      const baseUrl = addon.id.replace(/\/[^\/]+\.json$/, '/');
+      configUrl = `${ensureSlash(baseUrl)}configure`;
+      logger.info(`Using addon.id as HTTP URL: ${configUrl}`);
+    }
 
-  logger.info(`Opening configuration for addon: ${addon.name} at URL: ${configUrl}`);
+    // 5. stremio:// containing http/https
+    else if (addon.id && (addon.id.includes('https://') || addon.id.includes('http://'))) {
+      const match = addon.id.match(/(https?:\/\/[^\/]+)(\/[^\s]*)?/);
+      if (match) {
+        const domain = match[1];
+        const path = match[2] ? match[2].replace(/\/[^\/]+\.json$/, '/') : '/';
+        configUrl = `${ensureSlash(domain + path)}configure`;
+        logger.info(`Extracted HTTP URL from stremio:// format: ${configUrl}`);
+      }
+    }
 
-  Linking.canOpenURL(configUrl)
-    .then(supported => {
-      if (supported) {
-        Linking.openURL(configUrl);
-      } else {
-        logger.error(`URL cannot be opened: ${configUrl}`);
-        setAlertTitle(t('addons.cannot_open_config_title'));
+    // 6. stremio://domain.com
+    if (!configUrl && addon.id && addon.id.startsWith('stremio://')) {
+      const match = addon.id.match(/stremio:\/\/([^\/]+)(\/[^\s]*)?/);
+      if (match) {
+        const domain = match[1];
+        const path = match[2] ? match[2].replace(/\/[^\/]+\.json$/, '/') : '/';
+        configUrl = `${ensureSlash(`https://${domain}${path}`)}configure`;
+        logger.info(`Converted stremio:// protocol to https:// for config URL: ${configUrl}`);
+      }
+    }
+
+    // 7. addon.transport
+    if (!configUrl && addon.transport && addon.transport.includes('http')) {
+      const baseUrl = addon.transport.replace(/\/[^\/]+\.json$/, '/');
+      configUrl = `${ensureSlash(baseUrl)}configure`;
+      logger.info(`Using addon.transport for config URL: ${configUrl}`);
+    }
+
+    // 8. originalUrl
+    if (!configUrl && (addon as any).originalUrl) {
+      const baseUrl = (addon as any).originalUrl.replace(/\/[^\/]+\.json$/, '/');
+      configUrl = `${ensureSlash(baseUrl)}configure`;
+      logger.info(`Using originalUrl property: ${configUrl}`);
+    }
+
+    // 9. Failure
+    if (!configUrl) {
+      logger.error(`Failed to determine config URL for addon: ${addon.name}, ID: ${addon.id}`);
+      setAlertTitle(t('addons.config_unavailable_title'));
+      setAlertMessage(t('addons.config_unavailable_msg'));
+      setAlertActions([{ label: t('common.ok'), onPress: () => setAlertVisible(false) }]);
+      setAlertVisible(true);
+      return;
+    }
+
+    logger.info(`Opening configuration for addon: ${addon.name} at URL: ${configUrl}`);
+
+    Linking.canOpenURL(configUrl)
+      .then(supported => {
+        if (supported) {
+          Linking.openURL(configUrl);
+        } else {
+          logger.error(`URL cannot be opened: ${configUrl}`);
+          setAlertTitle(t('addons.cannot_open_config_title'));
+          setAlertMessage(t('addons.cannot_open_config_msg', { url: configUrl }));
+          setAlertActions([{ label: t('common.ok'), onPress: () => setAlertVisible(false) }]);
+          setAlertVisible(true);
+        }
+      })
+      .catch(err => {
+        logger.error(`Error checking if URL can be opened: ${configUrl}`, err);
+        setAlertTitle(t('common.error'));
         setAlertMessage(t('addons.cannot_open_config_msg', { url: configUrl }));
         setAlertActions([{ label: t('common.ok'), onPress: () => setAlertVisible(false) }]);
         setAlertVisible(true);
-      }
-    })
-    .catch(err => {
-      logger.error(`Error checking if URL can be opened: ${configUrl}`, err);
-      setAlertTitle(t('common.error'));
-      setAlertMessage(t('addons.cannot_open_config_msg', { url: configUrl }));
-      setAlertActions([{ label: t('common.ok'), onPress: () => setAlertVisible(false) }]);
-      setAlertVisible(true);
-    });
-};
+      });
+  };
 
 
   const toggleReorderMode = () => {
